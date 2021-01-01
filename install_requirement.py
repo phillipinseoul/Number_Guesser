@@ -13,8 +13,8 @@ def install(package):
     '''
     subprocess.call([sys.executable, "-m", "pip", "install", package])
 
-required = []
-failed = []
+required = []       # List of required packages
+failed = []         # List of packages failed to install
 
 # Try to open requirements.txt file & Read all required packages
 try:
@@ -23,6 +23,44 @@ try:
     required = [line.strip().lower() for line in file_lines]
     file.close()
 except FileNotFoundError:
-    print("[ERROR] No requirements.txt file found");
+    print("[ERROR] No requirements.txt file found")
 
 
+if len(required) > 0:
+    print("[INPUT] You are about to install", len(required), "packageds, would you like to proceed (y/n):", end=" ")
+    ans = input()
+
+    if ans.lower() == "y":
+        for package in required:
+            try:
+                print("[LOG] Looking for", package)
+                with contextlib.redirect_stdout(None):
+                    __import__(package)
+                print("[LOG]", package, "is already installed, skipping...")
+            except ImportError:
+                print("[LOG]", package, "not installed")
+
+                try:
+                    print("[LOG] Trying to install", package, "via pip")
+                    try:
+                        import pip
+                    except:
+                        print("[EXCEPTION] Pip is not installed")
+                        print("[LOG] Trying to install pip")
+                        get_pip.main()
+                        print("[LOG] Pip has been installed")
+                    
+                    print("[LOG] Installing", package)
+                    install(package)
+                    with contextlib.redirect_stdout(None):
+                        __import__(package)
+                    print("[LOG]", package, "has been installed")
+                except Exception as e:
+                    print("[ERROR] Could not install", package, "-", e)
+                    failed.append(package)
+    else:
+        print("[STOP] Operation terminated by user")
+
+else:
+    print("[LOG] No Packages to install")
+                
