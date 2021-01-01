@@ -26,6 +26,7 @@ except FileNotFoundError:
     print("[ERROR] No requirements.txt file found")
 
 
+# If there are packages required to be installed
 if len(required) > 0:
     print("[INPUT] You are about to install", len(required), "packageds, would you like to proceed (y/n):", end=" ")
     ans = input()
@@ -63,4 +64,16 @@ if len(required) > 0:
 
 else:
     print("[LOG] No Packages to install")
+
+
+# If there are packaged failed to install
+if len(failed) > 0:
+    print("[FAILED]", len(failed), "package(s) were not installed. Failed package install(s):", end=" ")
+    for x, package in enumerate(failed):
+        if x != len(failed) - 1:
+            print(pacakge, end=",")
+        else:
+            print(package)
+
+
                 
